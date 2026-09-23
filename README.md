@@ -7,9 +7,32 @@ A containerized FastAPI application deployed on AWS ECS Fargate behind an Applic
 Docker images are stored in ECR and run as Fargate tasks across multiple availability zones. An ALB routes HTTPS traffic to the tasks, with Application Auto Scaling adjusting capacity based on CPU utilization. Secrets Manager handles database credentials at container startup.
 
 ```
-Internet → ALB (HTTPS/ACM) → Target Group → Fargate Tasks (multi-AZ)
-                                                      ↑
-                                              ECR (Docker image)
+┌─────────────────────────────────────────────────────────┐
+│                        Internet                         │
+└────────────────────────┬────────────────────────────────┘
+                         │
+              ┌──────────▼──────────┐
+              │  Application Load   │
+              │  Balancer (ALB)     │  ← HTTPS via ACM
+              └──────┬──────────────┘
+                     │  Target Group
+          ┌──────────┴──────────┐
+          │                     │
+   ┌──────▼──────┐       ┌──────▼──────┐
+   │ Fargate Task│       │ Fargate Task│   ← Auto Scaled
+   │  (AZ-1)     │       │  (AZ-2)     │
+   └──────┬──────┘       └──────┬──────┘
+          │                     │
+          └──────────┬──────────┘
+                     │
+         ┌───────────▼───────────┐
+         │     ECS Cluster       │
+         │  (no EC2 to manage)   │
+         └───────────────────────┘
+                     │
+         ┌───────────▼───────────┐
+         │   ECR Private Registry│  ← Docker image pushed here
+         └───────────────────────┘
 ```
 
 ## Stack
