@@ -3,11 +3,11 @@ name: Deploy to ECS Fargate
 on:
   push:
     branches: [main]
-  workflow_dispatch: {}   # lets you trigger it manually from the Actions tab too
+  workflow_dispatch: {} # lets you trigger it manually from the Actions tab too
 
 permissions:
-  id-token: write   # required for OIDC auth to AWS
-  contents: read     # required to check out the repo
+  id-token: write # required for OIDC auth to AWS
+  contents: read # required to check out the repo
 
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -31,7 +31,7 @@ jobs:
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
-          role-skip-session-tagging: tru
+          role-skip-session-tagging: true
 
       - name: Login to Amazon ECR
         id: login-ecr
